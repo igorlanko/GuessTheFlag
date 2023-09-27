@@ -20,6 +20,8 @@ struct ContentView: View {
 				.ignoresSafeArea()
 			
 			VStack(spacing: 32) {
+				Spacer()
+				
 				VStack {
 					Text("Tap the flag of")
 						.foregroundColor(.white)
@@ -37,6 +39,14 @@ struct ContentView: View {
 							.clipShape(RoundedRectangle(cornerSize: CGSize(width: 8, height: 8)))
 					}
 				}
+				
+				Spacer()
+				Spacer()
+				
+				Text("Score: ???")
+					.foregroundStyle(Color.white)
+				
+				Spacer()
 			}
 		}
 		.alert(scoreTitle, isPresented: $showingScore) {
