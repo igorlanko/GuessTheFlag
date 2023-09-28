@@ -8,11 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
-	@State private var showingScore = false
-	@State private var scoreTitle = ""
+	struct Game {
+		var showingScore = false
+		var gameEnded = false
+		var scoreTitle = ""
+		var score: Int = 0
+		
+		var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "US"].shuffled()
+		var correctAnswer = Int.random(in: 0...2)
+		
+		var round: Int = 0 {
+			didSet {
+				if round >= 8 {
+					gameEnded = true
+				}
+ 			}
+		}
+	}
 	
-	@State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "US"].shuffled()
-	@State private var correctAnswer = Int.random(in: 0...2)
+	@State private var game = Game()
 	
     var body: some View {
 		ZStack {
@@ -25,7 +39,7 @@ struct ContentView: View {
 				VStack {
 					Text("Tap the flag of")
 						.foregroundColor(.white)
-					Text(countries[correctAnswer])
+					Text(game.countries[game.correctAnswer])
 						.font(.largeTitle.weight(.semibold))
 						.foregroundColor(.white)
 				}
@@ -34,7 +48,7 @@ struct ContentView: View {
 					Button {
 						flagTapped(number)
 					} label: {
-						Image(countries[number])
+						Image(game.countries[number])
 							.renderingMode(.original)
 							.clipShape(RoundedRectangle(cornerSize: CGSize(width: 8, height: 8)))
 					}
@@ -43,32 +57,46 @@ struct ContentView: View {
 				Spacer()
 				Spacer()
 				
-				Text("Score: ???")
+				Text("Score: \(game.score) • Round \(game.round)/8")
 					.foregroundStyle(Color.white)
 				
 				Spacer()
 			}
 		}
-		.alert(scoreTitle, isPresented: $showingScore) {
+		.alert(game.scoreTitle, isPresented: $game.showingScore) {
 			Button("Continue", action: askQuestion)
 		}  message: {
-			Text("Your score ???")
+			Text("Your score \(game.score)")
+		}
+		.alert("Congrats! Game complete", isPresented: $game.gameEnded) {
+			Button("New game", action: reset)
+		} message: {
+			Text("Your score is \(game.score).")
 		}
 	}
 	
 	func flagTapped(_ number: Int) {
-		if number == correctAnswer {
-			scoreTitle = "Correct"
+		if number == game.correctAnswer {
+			game.scoreTitle = "Correct!"
+			game.score += 1
+			game.round += 1
 		} else {
-			scoreTitle = "Wrong"
+			game.scoreTitle = "Wrong! That's the flag of \(game.countries[game.correctAnswer])."
+			game.score -= 1
+			game.round += 1
 		}
 		
-		showingScore = true
+		game.showingScore = true
 	}
 	
 	func askQuestion() {
-		countries.shuffle()
-		correctAnswer = Int.random(in: 0...2)
+		game.countries.shuffle()
+		game.correctAnswer = Int.random(in: 0...2)
+	}
+	
+	func reset() {
+		game.gameEnded = false
+		game.round = 0
 	}
 }
 
