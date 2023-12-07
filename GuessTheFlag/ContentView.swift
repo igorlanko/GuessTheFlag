@@ -17,6 +17,14 @@ struct FlagsView: View {
 	}
 }
 
+struct ScreenTitle: ViewModifier {
+	func body(content: Content) -> some View {
+		content
+			.font(.largeTitle.weight(.semibold))
+			.foregroundColor(.white)
+	}
+}
+
 struct ContentView: View {
 	struct Game {
 		var showingScore = false
@@ -50,8 +58,7 @@ struct ContentView: View {
 					Text("Tap the flag of")
 						.foregroundColor(.white)
 					Text(game.countries[game.correctAnswer])
-						.font(.largeTitle.weight(.semibold))
-						.foregroundColor(.white)
+						.modifier(ScreenTitle())
 				}
 				
 				ForEach(0..<3) { number in
