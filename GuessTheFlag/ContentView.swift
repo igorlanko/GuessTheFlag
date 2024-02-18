@@ -45,6 +45,7 @@ struct ContentView: View {
 	}
 	
 	@State private var game = Game()
+	@State private var tappedFlag = -1
 	
     var body: some View {
 		ZStack {
@@ -67,6 +68,11 @@ struct ContentView: View {
 					} label: {
 						FlagsView(countryNumber: game.countries[number])
 					}
+//					.rotation3DEffect(.degrees(tappedFlag == number ? 360 : 0), axis: (x: 0.0, y: 1.0, z: 0.0)) // for the task
+					.scaleEffect(tappedFlag == number ? 1.25 : 1)
+					.opacity(tappedFlag == -1 || tappedFlag == number ? 1 : 0.25)
+					.scaleEffect(tappedFlag == -1 || tappedFlag == number ? 1 : 0.8)
+					.animation(.default, value: tappedFlag)
 				}
 				
 				Spacer()
@@ -96,17 +102,19 @@ struct ContentView: View {
 			game.score += 1
 			game.round += 1
 		} else {
-			game.scoreTitle = "Wrong! That's the flag of \(game.countries[game.correctAnswer])."
+			game.scoreTitle = "Wrong! That's not the flag of \(game.countries[game.correctAnswer])."
 			game.score -= 1
 			game.round += 1
 		}
 		
 		game.showingScore = true
+		tappedFlag = number
 	}
 	
 	func askQuestion() {
 		game.countries.shuffle()
 		game.correctAnswer = Int.random(in: 0...2)
+		tappedFlag = -1
 	}
 	
 	func reset() {
